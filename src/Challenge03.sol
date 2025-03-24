@@ -26,6 +26,7 @@ contract Challenge03 {
 
     string public name;
     string public symbol;
+    //SIG03 -00- should be a constant!
     uint8 public decimals = 18;
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;

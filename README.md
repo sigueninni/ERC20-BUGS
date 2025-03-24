@@ -1,3 +1,6 @@
+# SIG Findings
+Every finding is tagged in the contract with TAG 'SIGU-XX' with XX = num of ChallengeXX
+
 # ERC-20 Spot the Bug
 
 ERC-20 Spot the Bug is a collection of 20 ERC-20 implementations with a bug injected in them.

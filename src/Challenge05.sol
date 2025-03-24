@@ -26,6 +26,7 @@ contract Challenge05 {
 
     string public name;
     string public symbol;
+    //SIG05 -00- should be a constant!
     uint8 public immutable decimals = 18;
     uint256 private _totalSupply;
 
@@ -69,6 +70,7 @@ contract Challenge05 {
         uint256 value
     ) public returns (bool) {
         _spendAllowance(from, msg.sender, value);
+        //SIG05 -01- to & from mixed up! should be --> _transfer(from, to, value);
         _transfer(to, from, value);
         return true;
     }

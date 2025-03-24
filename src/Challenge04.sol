@@ -28,6 +28,7 @@ contract Challenge04 {
 
     string public name;
     string public symbol;
+    //SIG04 -00- should be a constant!
     uint8 public immutable decimals = 18;
     uint256 private _totalSupply;
     bool public paused;
