@@ -2,31 +2,42 @@
 
 /// ██████╗ ██╗  ██╗ █████╗ ██╗     ██╗     ███████╗███╗   ██╗ ██████╗ ███████╗
 /// ██╔════╝██║  ██║██╔══██╗██║     ██║     ██╔════╝████╗  ██║██╔════╝ ██╔════╝
-/// ██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗  
-/// ██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝  
+/// ██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗
+/// ██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝
 /// ╚██████╗██║  ██║██║  ██║███████╗███████╗███████╗██║ ╚████║╚██████╔╝███████╗
 /// ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
-                                                                           
-/// ██████╗  ██████╗                                                          
-/// ██╔═████╗██╔════╝                                                          
-/// ██║██╔██║███████╗                                                          
-/// ████╔╝██║██╔═══██╗                                                         
-/// ╚██████╔╝╚██████╔╝                                                         
-/// ╚═════╝  ╚═════╝                                                          
-                                                                           
+
+/// ██████╗  ██████╗
+/// ██╔═████╗██╔════╝
+/// ██║██╔██║███████╗
+/// ████╔╝██║██╔═══██╗
+/// ╚██████╔╝╚██████╔╝
+/// ╚═════╝  ╚═════╝
+
 pragma solidity ^0.8.20;
 
 contract Challenge06 {
-    
     event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
     event Blacklisted(address indexed account);
     event Unblacklisted(address indexed account);
 
-    error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);
+    error ERC20InsufficientBalance(
+        address sender,
+        uint256 balance,
+        uint256 needed
+    );
     error ERC20InvalidSender(address sender);
     error ERC20InvalidReceiver(address receiver);
-    error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed);
+    error ERC20InsufficientAllowance(
+        address spender,
+        uint256 allowance,
+        uint256 needed
+    );
     error ERC20InvalidApprover(address approver);
     error ERC20InvalidSpender(address spender);
     error Unauthorized();
@@ -74,7 +85,13 @@ contract Challenge06 {
         return true;
     }
 
-    function transferFrom(address from, address to, uint256 value) public returns (bool) {
+    //SIG06 -01- "from" if blacklisted, is able to move his tokens through an allowance to a non-blacklisted "spender"!
+    //Should add a require(!blacklist[from])
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) public returns (bool) {
         require(!blacklist[msg.sender], "Sender blacklisted");
         _spendAllowance(from, msg.sender, value);
         _transfer(from, to, value);
@@ -85,7 +102,10 @@ contract Challenge06 {
         return _balances[account];
     }
 
-    function allowance(address owner, address spender) public view returns (uint256) {
+    function allowance(
+        address owner,
+        address spender
+    ) public view returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -98,7 +118,8 @@ contract Challenge06 {
         if (to == address(0)) revert ERC20InvalidReceiver(to);
 
         uint256 fromBalance = _balances[from];
-        if (fromBalance < value) revert ERC20InsufficientBalance(from, fromBalance, value);
+        if (fromBalance < value)
+            revert ERC20InsufficientBalance(from, fromBalance, value);
 
         _balances[from] = fromBalance - value;
         _balances[to] += value;
@@ -113,10 +134,17 @@ contract Challenge06 {
         emit Approval(owner, spender, value);
     }
 
-    function _spendAllowance(address tokenOwner, address spender, uint256 value) internal {
+    function _spendAllowance(
+        address tokenOwner,
+        address spender,
+        uint256 value
+    ) internal {
         uint256 currentAllowance = allowance(tokenOwner, spender);
         if (currentAllowance != type(uint256).max) {
-            require(currentAllowance >= value, "Challenge06: insufficient allowance");
+            require(
+                currentAllowance >= value,
+                "Challenge06: insufficient allowance"
+            );
             _allowances[tokenOwner][spender] = currentAllowance - value;
         }
     }

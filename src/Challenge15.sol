@@ -1,27 +1,30 @@
 // SPDX-License-Identifier: CC-BY-NC-SA-4.0
 
-/// ██████╗ ██╗  ██╗ █████╗ ██╗     ██╗     ███████╗███╗   ██╗ ██████╗ ███████╗    
-/// ██╔════╝██║  ██║██╔══██╗██║     ██║     ██╔════╝████╗  ██║██╔════╝ ██╔════╝    
-/// ██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗      
-/// ██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝      
-/// ╚██████╗██║  ██║██║  ██║███████╗███████╗███████╗██║ ╚████║╚██████╔╝███████╗    
-/// ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝    
-                                                                               
-///  ██╗███████╗                                                                   
-/// ███║██╔════╝                                                                   
-/// ╚██║███████╗                                                                   
-///  ██║╚════██║                                                                   
-///  ██║███████║                                                                   
-///  ╚═╝╚══════╝                                                                   
-                                                                               
+/// ██████╗ ██╗  ██╗ █████╗ ██╗     ██╗     ███████╗███╗   ██╗ ██████╗ ███████╗
+/// ██╔════╝██║  ██║██╔══██╗██║     ██║     ██╔════╝████╗  ██║██╔════╝ ██╔════╝
+/// ██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗
+/// ██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝
+/// ╚██████╗██║  ██║██║  ██║███████╗███████╗███████╗██║ ╚████║╚██████╔╝███████╗
+/// ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
+
+///  ██╗███████╗
+/// ███║██╔════╝
+/// ╚██║███████╗
+///  ██║╚════██║
+///  ██║███████║
+///  ╚═╝╚══════╝
+
 pragma solidity >=0.8.0;
 
 /// @notice Modern and gas efficient ERC20
 contract Challenge15 {
-
     event Transfer(address indexed from, address indexed to, uint256 amount);
 
-    event Approval(address indexed owner, address indexed spender, uint256 amount);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 amount
+    );
 
     string public name;
 
@@ -35,13 +38,19 @@ contract Challenge15 {
 
     mapping(address => mapping(address => uint256)) public allowance;
 
+    //same bugs as previous , checks of balances & allowances + overflows & underflows
+    //No mint possible here
+
     constructor(string memory _name, string memory _symbol, uint8 _decimals) {
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
     }
 
-    function approve(address spender, uint256 amount) public virtual returns (bool) {
+    function approve(
+        address spender,
+        uint256 amount
+    ) public virtual returns (bool) {
         allowance[msg.sender][spender] = amount;
 
         emit Approval(msg.sender, spender, amount);
@@ -49,7 +58,10 @@ contract Challenge15 {
         return true;
     }
 
-    function transfer(address to, uint256 amount) public virtual returns (bool) {
+    function transfer(
+        address to,
+        uint256 amount
+    ) public virtual returns (bool) {
         balanceOf[msg.sender] -= amount;
 
         unchecked {
@@ -61,10 +73,15 @@ contract Challenge15 {
         return true;
     }
 
-    function transferFrom(address from, address to, uint256 amount) public virtual returns (bool) {
-        uint256 allowed = allowance[from][msg.sender]; 
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public virtual returns (bool) {
+        uint256 allowed = allowance[from][msg.sender];
 
-        if (allowed != type(uint256).max) allowance[from][msg.sender] = allowed - amount;
+        if (allowed != type(uint256).max)
+            allowance[from][msg.sender] = allowed - amount;
 
         balanceOf[from] -= amount;
 
@@ -77,6 +94,7 @@ contract Challenge15 {
         return true;
     }
 
+    //SIG15 -01- balances[to] not updated but in same time totalSupply is
     function _mint(address to, uint256 amount) internal virtual {
         totalSupply += amount;
 

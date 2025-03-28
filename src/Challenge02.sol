@@ -78,7 +78,7 @@ contract Challenge02 {
 
         uint256 allowed = allowance[from][msg.sender];
 
-        //SIG02 -04- why this if?
+        //SIG02 -04- why this if? unlimited allowance
 
         if (allowed != type(uint256).max)
             allowance[from][msg.sender] = allowed - amount;

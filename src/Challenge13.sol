@@ -1,26 +1,30 @@
 // SPDX-License-Identifier: CC-BY-NC-SA-4.0
 
-/// ██████╗ ██╗  ██╗ █████╗ ██╗     ██╗     ███████╗███╗   ██╗ ██████╗ ███████╗    
-/// ██╔════╝██║  ██║██╔══██╗██║     ██║     ██╔════╝████╗  ██║██╔════╝ ██╔════╝    
-/// ██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗      
-/// ██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝      
-/// ╚██████╗██║  ██║██║  ██║███████╗███████╗███████╗██║ ╚████║╚██████╔╝███████╗    
-/// ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝    
-                                                                               
-///  ██╗██████╗                                                                    
-///  ███║╚════██╗                                                                   
-///  ██║ █████╔╝                                                                   
-///  ██║ ╚═══██╗                                                                   
-///  ██║██████╔╝                                                                   
-///  ╚═╝╚═════╝                                                                    
-                                                                            
+/// ██████╗ ██╗  ██╗ █████╗ ██╗     ██╗     ███████╗███╗   ██╗ ██████╗ ███████╗
+/// ██╔════╝██║  ██║██╔══██╗██║     ██║     ██╔════╝████╗  ██║██╔════╝ ██╔════╝
+/// ██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗
+/// ██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝
+/// ╚██████╗██║  ██║██║  ██║███████╗███████╗███████╗██║ ╚████║╚██████╔╝███████╗
+/// ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
+
+///  ██╗██████╗
+///  ███║╚════██╗
+///  ██║ █████╔╝
+///  ██║ ╚═══██╗
+///  ██║██████╔╝
+///  ╚═╝╚═════╝
+
 pragma solidity >=0.8.0;
 
 /// @notice Modern and gas efficient ERC20
 contract Challenge13 {
     event Transfer(address indexed from, address indexed to, uint256 amount);
 
-    event Approval(address indexed owner, address indexed spender, uint256 amount);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 amount
+    );
 
     string public name;
 
@@ -38,9 +42,14 @@ contract Challenge13 {
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
+        //SIG13 -00- nothing minted and no other way to mint token so no tokens in this contract at all
     }
 
-    function approve(address spender, uint256 amount) public virtual returns (bool) {
+    function approve(
+        address spender,
+        uint256 amount
+    ) public virtual returns (bool) {
+        //SIG13 -05- spender & msg.sender inverted!  should be allowance[msg.sender][spender]
         allowance[spender][msg.sender] = amount;
 
         emit Approval(msg.sender, spender, amount);
@@ -48,9 +57,13 @@ contract Challenge13 {
         return true;
     }
 
-    function transfer(address to, uint256 amount) public virtual returns (bool) {
+    function transfer(
+        address to,
+        uint256 amount
+    ) public virtual returns (bool) {
         balanceOf[msg.sender] -= amount;
 
+        //SIG13 -01- Possible overflow for balanceOf[to]
         unchecked {
             balanceOf[to] += amount;
         }
@@ -60,12 +73,22 @@ contract Challenge13 {
         return true;
     }
 
-    function transferFrom(address from, address to, uint256 amount) public virtual returns (bool) {
-        uint256 allowed = allowance[from][msg.sender]; 
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public virtual returns (bool) {
+        uint256 allowed = allowance[from][msg.sender];
 
-        if (allowed != type(uint256).max) allowance[from][msg.sender] = allowed - amount;
+        if (allowed != type(uint256).max)
+            allowance[from][msg.sender] = allowed - amount;
 
         balanceOf[from] -= amount;
+
+        //SIG13 -02- Possible overflow for balanceOf[to]
+
+        //SIG13 -04- no check if balance[from] >= amount
+        //SIG13 -05- no check if  allowance[from][msg.sender] >= amount
 
         unchecked {
             balanceOf[to] += amount;
@@ -89,6 +112,9 @@ contract Challenge13 {
     function _burn(address from, uint256 amount) internal virtual {
         balanceOf[from] -= amount;
 
+        //SIG12 -07-  no check if  balanceOf[from] >= amount
+
+        //SIG12 -03- Possible underflow for totalSupply
         unchecked {
             totalSupply -= amount;
         }

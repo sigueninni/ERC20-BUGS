@@ -2,26 +2,29 @@
 
 /// ██████╗ ██╗  ██╗ █████╗ ██╗     ██╗     ███████╗███╗   ██╗ ██████╗ ███████╗
 /// ██╔════╝██║  ██║██╔══██╗██║     ██║     ██╔════╝████╗  ██║██╔════╝ ██╔════╝
-/// ██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗  
-/// ██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝  
+/// ██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗
+/// ██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝
 /// ╚██████╗██║  ██║██║  ██║███████╗███████╗███████╗██║ ╚████║╚██████╔╝███████╗
 /// ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
-                                                                           
-///  ██████╗  █████╗                                                           
-/// ██╔═████╗██╔══██╗                                                          
-/// ██║██╔██║╚██████║                                                          
-/// ████╔╝██║ ╚═══██║                                                          
-/// ╚██████╔╝ █████╔╝                                                          
-///  ╚═════╝  ╚════╝                                                           
-                                                                        
+
+///  ██████╗  █████╗
+/// ██╔═████╗██╔══██╗
+/// ██║██╔██║╚██████║
+/// ████╔╝██║ ╚═══██║
+/// ╚██████╔╝ █████╔╝
+///  ╚═════╝  ╚════╝
+
 pragma solidity >=0.8.0;
 
 /// @notice Modern and gas efficient ERC20
 contract Challenge09 {
-
     event Transfer(address indexed from, address indexed to, uint256 amount);
 
-    event Approval(address indexed owner, address indexed spender, uint256 amount);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 amount
+    );
 
     string public name = "BuggyToken9";
 
@@ -47,7 +50,10 @@ contract Challenge09 {
         return _totalSupply;
     }
 
-    function allowance(address owner, address spender) external view returns (uint256) {
+    function allowance(
+        address owner,
+        address spender
+    ) external view returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -57,6 +63,7 @@ contract Challenge09 {
         return true;
     }
 
+    //SIG09 -01- underflow make balance underflow and become more that msg.sender own because no check of balanceOf(msg.sender)
     function transfer(address to, uint256 amount) public returns (bool) {
         unchecked {
             _balances[msg.sender] -= amount;
@@ -66,10 +73,17 @@ contract Challenge09 {
         return true;
     }
 
-    function transferFrom(address from, address to, uint256 amount) public returns (bool) {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public returns (bool) {
         uint256 currentAllowance = _allowances[from][msg.sender];
         if (currentAllowance != type(uint256).max) {
-            require(currentAllowance >= amount, "ERC20: insufficient allowance");
+            require(
+                currentAllowance >= amount,
+                "ERC20: insufficient allowance"
+            );
             _allowances[from][msg.sender] = currentAllowance - amount;
         }
 

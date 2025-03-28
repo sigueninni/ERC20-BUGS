@@ -1,28 +1,31 @@
 // SPDX-License-Identifier: CC-BY-NC-SA-4.0
 
-/// ██████╗ ██╗  ██╗ █████╗ ██╗     ██╗     ███████╗███╗   ██╗ ██████╗ ███████╗    
-/// ██╔════╝██║  ██║██╔══██╗██║     ██║     ██╔════╝████╗  ██║██╔════╝ ██╔════╝    
-/// ██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗      
-/// ██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝      
-/// ╚██████╗██║  ██║██║  ██║███████╗███████╗███████╗██║ ╚████║╚██████╔╝███████╗    
-/// ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝    
-                                                                               
-///  ██╗ ██╗                                                                       
-/// ███║███║                                                                       
-/// ╚██║╚██║                                                                       
-///  ██║ ██║                                                                       
-///  ██║ ██║                                                                       
-///  ╚═╝ ╚═╝                                                                       
-                                                                               
+/// ██████╗ ██╗  ██╗ █████╗ ██╗     ██╗     ███████╗███╗   ██╗ ██████╗ ███████╗
+/// ██╔════╝██║  ██║██╔══██╗██║     ██║     ██╔════╝████╗  ██║██╔════╝ ██╔════╝
+/// ██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗
+/// ██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝
+/// ╚██████╗██║  ██║██║  ██║███████╗███████╗███████╗██║ ╚████║╚██████╔╝███████╗
+/// ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
+
+///  ██╗ ██╗
+/// ███║███║
+/// ╚██║╚██║
+///  ██║ ██║
+///  ██║ ██║
+///  ╚═╝ ╚═╝
+
 pragma solidity ^0.8.20;
 
 /**
  * @title Challenge11
  */
 contract Challenge11 {
-
     event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
@@ -63,7 +66,10 @@ contract Challenge11 {
         return true;
     }
 
-    function allowance(address owner, address spender) public view returns (uint256) {
+    function allowance(
+        address owner,
+        address spender
+    ) public view returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -72,7 +78,11 @@ contract Challenge11 {
         return true;
     }
 
-    function transferFrom(address from, address to, uint256 value) public returns (bool) {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) public returns (bool) {
         _transfer(from, to, value);
         uint256 currentAllowance = _allowances[from][msg.sender];
         require(currentAllowance >= value, "Insufficient allowance");
@@ -80,14 +90,27 @@ contract Challenge11 {
         return true;
     }
 
-    function increaseAllowance(address spender, uint256 addedValue) public returns (bool) {
-        _approve(msg.sender, spender, allowance(msg.sender, spender) + addedValue);
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue
+    ) public returns (bool) {
+        _approve(
+            msg.sender,
+            spender,
+            allowance(msg.sender, spender) + addedValue
+        );
         return true;
     }
 
-    function decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue
+    ) public returns (bool) {
         uint256 currentAllowance = allowance(msg.sender, spender);
-        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
+        require(
+            currentAllowance >= subtractedValue,
+            "ERC20: decreased allowance below zero"
+        );
         unchecked {
             _approve(msg.sender, spender, currentAllowance - subtractedValue);
         }
@@ -100,6 +123,8 @@ contract Challenge11 {
 
         uint256 fromBalance = _balances[from];
         require(fromBalance >= value, "ERC20: transfer amount exceeds balance");
+
+        //SIG11 -01- Possible overflow for balances[to]
         unchecked {
             _balances[from] = fromBalance - value;
             _balances[to] += value;
@@ -120,6 +145,7 @@ contract Challenge11 {
         require(account != address(0), "ERC20: mint to the zero address");
 
         _totalSupply += value;
+        //SIG11 -02- Possible overflow for  _balances[account]
         unchecked {
             _balances[account] += value;
         }
